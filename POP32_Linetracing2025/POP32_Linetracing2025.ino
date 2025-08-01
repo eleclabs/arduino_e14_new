@@ -34,7 +34,7 @@ void setup() {
   //stop(10);
   //Move(-50,-50,5000);
   //END();
-  //view();
+  view();
 }
 
 void loop() {
@@ -42,7 +42,7 @@ void loop() {
   //stop(100);
   //Move(-80,-80,5000);
   //stop(100);
-  TrackPID(30, 0.05, 0.03);
+  //TrackPID(30, 0.05, 0.03);
   //TrackPID(20, 0.03, 0.03);
   //TrackPID(40, 0.03, 0.07);
   //m1();
