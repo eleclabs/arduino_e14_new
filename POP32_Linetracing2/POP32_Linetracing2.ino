@@ -8,13 +8,13 @@ int REFmin[NUM_SENSORS], REFmax[NUM_SENSORS];
 int  last_value = 0, LastError , SumError;
 
 ///////////////////////////////////////////////////////////////////////////
-int MinValue[NUM_SENSORS] = {238,268,103,69,73,63,61,243};
-int MaxValue[NUM_SENSORS] = {870,891,796,781,814,801,773,808};
-int REF[NUM_SENSORS] = {554,579,449,425,443,432,417,525};
+int MinValue[NUM_SENSORS] = {85,198,77,62,75,65,73,53};
+int MaxValue[NUM_SENSORS] = {852,894,842,841,869,864,876,774};
+int REF[NUM_SENSORS] = {468,546,459,451,472,464,474,413};
 ///////////////////////////////////////////////////////////////////////////
-int MinValue2[NUM_SENSORS] = {238,268,103,69,73,63,61,243};
-int MaxValue2[NUM_SENSORS] = {870,891,796,781,814,801,773,808};
-int REF2[NUM_SENSORS] = {554,579,449,425,443,432,417,525};
+int MinValue2[NUM_SENSORS] = {548,658,558,496,568,539,556,302};
+int MaxValue2[NUM_SENSORS] = {873,914,874,848,876,863,888,800};
+int REF2[NUM_SENSORS] = {710,786,716,672,722,701,722,551};
 ///////////////////////////////////////////////////////////////////////////
 
 void setup() {
@@ -25,17 +25,19 @@ void setup() {
   beep();
   delay(100);
 
-  //ShowCalibrate(); //Calibrate Light of Sensor
-  //SerialF(); //Serial Sensor
-  //Program1();
+ //ShowCalibrate(); //Calibrate Light of Sensor
+ //SerialF(); //Serial Sensor
+ //Program1();
 }
 
 void loop() {
 //Motor(20,20);delay(1000); 
-stdPID(20, 0.11, 0.03, 100, -10) ; //speed, kp, kd, Max, Min
+//stdPID(20, 0.11, 0.03, 100, -10) ; //speed, kp, kd, Max, Min
+//FF(20, 0.09, 0.05, 'p', 20, 100, -20);
+FFtimer2(20, 0.09, 0.05, 1000, 100, 0); //เริ่มต้นออกจากเส้นเขียว
+m1();
 
-//m1();
-//while(1){MotorStop();}  //จบการทำงาน
+while(1){MotorStop();}  //จบการทำงาน
 
 }
 
@@ -291,6 +293,16 @@ void FFtimer(int baseSpeed, float Kp, float Kd, int totalTime, int maxsp, int mi
   }
 }
 
+
+void FFtimer2(int baseSpeed, float Kp, float Kd, int totalTime, int maxsp, int minsp) {
+  unsigned long startTime  = millis();
+  unsigned long endTime = startTime + totalTime;
+  while (millis() <= endTime) {
+    stdPID2(baseSpeed, Kp , Kd , maxsp, minsp);
+  }
+}
+
+
 void FF(int spd, float kp , float kd, char select, int dl, int maxsp, int minsp) {
   while (1) {
     readCalibrate();
@@ -306,7 +318,7 @@ void FF(int spd, float kp , float kd, char select, int dl, int maxsp, int minsp)
     while (1)
     {
       readCalibrate();
-      if (F[0] >= REF[0] && F[7] >= REF[7]) break;
+      if (F[0] <= REF[0] && F[7] <= REF[7]) break;
       Motor(-20, -20);
     }
     MotorStop();
@@ -315,7 +327,7 @@ void FF(int spd, float kp , float kd, char select, int dl, int maxsp, int minsp)
     while (1)
     {
       readCalibrate();
-      if (F[0] >= REF[0] && F[7] >= REF[7]) break;
+      if (F[0] <= REF[0] && F[7] <= REF[7]) break;
       Motor(20, 20);
     }
     MotorStop();
@@ -334,19 +346,21 @@ void FF(int spd, float kp , float kd, char select, int dl, int maxsp, int minsp)
 void FF2(int spd, float kp , float kd, char select, int dl, int maxsp, int minsp) {
   while (1) {
     readCalibrate2();
-    if ((F[0] <= REF2[0] && F[1] <= REF2[1] && F[2] <= REF2[2] && F[3] <= REF2[3] && F[4] <= REF2[4] && F[5] <= REF2[5] && F[6] <= REF2[6] &&  F[7] <= REF2[7]))
+   //if ((F[0] <= REF2[0] && F[1] <= REF2[1] && F[2] <= REF2[2] && F[3] <= REF2[3] && F[4] <= REF2[4] && F[5] <= REF2[5] && F[6] <= REF2[6] &&  F[7] <= REF2[7]))
+   if ((F[0] <= REF2[0] && F[1] <= REF2[1]  && F[6] <= REF2[6] &&  F[7] <= REF2[7]))
     {
       break;
     }
     stdPID2(spd, kp, kd , maxsp, minsp);
   }
+
   MotorStop();
   if (select == 's') {
     Motor(-spd, -spd); delay(dl);
     while (1)
     {
       readCalibrate2();
-      if (F[0] >= REF2[0] && F[7] >= REF2[7]) break;
+      if (F[0] <= REF2[0] && F[7] <= REF2[7]) break;
       Motor(-20, -20);
     }
     MotorStop();
@@ -355,7 +369,7 @@ void FF2(int spd, float kp , float kd, char select, int dl, int maxsp, int minsp
     while (1)
     {
       readCalibrate2();
-      if (F[0] >= REF2[0] && F[7] >= REF2[7]) break;
+      if (F[0] <= REF2[0] && F[7] <= REF2[7]) break;
       Motor(20, 20);
     }
     MotorStop();
@@ -449,15 +463,3 @@ void SerialPos() {
   }
 }
 
-//-----Mision-----
-void m1() {
-  FF(20, 0.09, 0.05, 'p', 20, 100, -20);
-  //SpinL();
-  //FF(40, 0.03, 0.05, 'p', 20, 100, -10);
-  //SpinR();
-  // FF(60, 0.03, 0.05, 'p', 50, 100, -10);
-  // FF(50, 0.03, 0.05, 'p', 20, 100, -10);
-  // SpinL();
-  // FF(50, 0.03, 0.05, 'p', 50, 100, -10);
-  // FFtimer(60, 0.03, 0.05, 1000, 100, -10);
-}

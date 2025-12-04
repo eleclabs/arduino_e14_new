@@ -1,4 +1,4 @@
-int sw = 27;
+int sw = 36;
 int led = 2;
 void setup() {
   pinMode(sw, INPUT);

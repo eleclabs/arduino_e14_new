@@ -14,28 +14,29 @@ void setup() {
   pinMode(dir4, OUTPUT);
 }
 
+
 void loop() {
   sw_ok();
-  fd(2000);
-  stop(1000);
-  bk(2000);
-  stop(1000);
+  fd(255, 4000);
+  stop(100);
+  bk(255, 4000);
+  stop(100);
 }
 
-void fd(int dl) {
+void fd(int speed, int dl) {
   Serial.println("Forward");
   
-  analogWrite(dir1, 128);
-  analogWrite(dir3, 128);   
+  analogWrite(dir1, speed);
+  analogWrite(dir3, speed);   
   analogWrite(dir2, 0);  
   analogWrite(dir4, 0);
   delay(dl);
 }
 
-void bk(int dl) {
+void bk(int speed, int dl) {
   Serial.println("Backward");
-  analogWrite(dir2, 128);
-  analogWrite(dir4, 128);        
+  analogWrite(dir2, speed);
+  analogWrite(dir4, speed);        
   analogWrite(dir1, 0);  
   analogWrite(dir3, 0); 
   delay(dl);
